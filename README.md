@@ -4,5 +4,5 @@
 
 ```console
 $ bundle install
-$ ruby main.rb
+$ bundle exec ruby main.rb
 ```
