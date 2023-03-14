@@ -31,6 +31,21 @@ def take_last(array, n)
   systems + array.drop(systems.size).reverse.take(n-systems.size).reverse
 end
 
+def system_content(model)
+  case model
+  when 'デフォルト'
+    filename = 'default.txt'
+  when 'アーニャ'
+    filename = 'anya.txt'
+  else
+    filename = 'default.txt'
+  end
+
+  File.open('model_profiles/' + filename, 'r') do |file|
+    file.read
+  end
+end
+
 OpenAI.configure do |config|
   config.access_token = ENV.fetch('OPENAI_ACCESS_TOKEN')
 end
@@ -47,7 +62,8 @@ temperature = prompt.slider('Temperature') do |range|
   range.format '|:slider| %.1f'
 end
 
-system_message = selected_ai == 'アーニャ' ? 'あなたは語尾に「ます」をつけます' : ''
+system_message = system_content(selected_ai)
+prompt.ok(system_message)
 
 messages = [
   { role: 'system', content: "#{system_message}" }
