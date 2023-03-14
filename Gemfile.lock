@@ -6,14 +6,28 @@ GEM
       multi_xml (>= 0.5.2)
     mini_mime (1.1.2)
     multi_xml (0.6.0)
+    pastel (0.8.0)
+      tty-color (~> 0.5)
     ruby-openai (3.5.0)
       httparty (>= 0.18.1)
+    tty-color (0.6.0)
+    tty-cursor (0.7.1)
+    tty-prompt (0.23.1)
+      pastel (~> 0.8)
+      tty-reader (~> 0.8)
+    tty-reader (0.9.0)
+      tty-cursor (~> 0.7)
+      tty-screen (~> 0.8)
+      wisper (~> 2.0)
+    tty-screen (0.8.1)
+    wisper (2.0.1)
 
 PLATFORMS
   x86_64-darwin-22
 
 DEPENDENCIES
   ruby-openai
+  tty-prompt
 
 BUNDLED WITH
    2.3.26
