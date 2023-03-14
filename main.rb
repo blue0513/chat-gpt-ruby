@@ -2,6 +2,23 @@ require 'openai'
 require 'tty-prompt'
 
 FILE_NAME = 'history.log'
+MODEL_OPTION = {
+  cycle: true,
+  marker: true,
+  filter: true,
+  echo: true
+}
+TEMPATURE_OPTION = {
+  min: 0.0,
+  max: 2.0,
+  step: 0.1,
+  default: 0.7,
+  format: '|:slider| %.1f'
+}
+MODELS = %w(
+  デフォルト
+  アーニャ
+)
 
 def dump_message(msg)
   File.open(FILE_NAME, 'w') do |f|
@@ -21,8 +38,19 @@ end
 client = OpenAI::Client.new
 prompt = TTY::Prompt.new
 
+selected_ai = prompt.select('Model', MODELS, MODEL_OPTION)
+temperature = prompt.slider('Temperature') do |range|
+  range.min 0.0
+  range.max 2.0
+  range.step 0.1
+  range.default 1.0
+  range.format '|:slider| %.1f'
+end
+
+system_message = selected_ai == 'アーニャ' ? 'あなたは語尾に「ます」をつけます' : ''
+
 messages = [
-  { role: 'system', content: 'あなたは語尾に「ですニャ」をつけます' }
+  { role: 'system', content: "#{system_message}" }
 ]
 
 100.times { |i|
@@ -39,12 +67,12 @@ messages = [
     parameters: {
       model: 'gpt-3.5-turbo',            # Required.
       messages: take_last(messages, 10), # Required.
-      temperature: 0.7
+      temperature: temperature
     }
   )
 
   gpt_content = response.dig('choices', 0, 'message', 'content')
-  puts 'ChatGPT: ' + gpt_content
+  puts "#{selected_ai}: " + gpt_content
 
   messages.push({ role: 'assistant', content: gpt_content })
 }
