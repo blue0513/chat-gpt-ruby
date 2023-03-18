@@ -5,6 +5,9 @@ require 'json'
 require 'fileutils'
 require 'tty-option'
 
+# Load other libraries
+require './play_sound'
+
 ############
 # Command
 ############
@@ -185,16 +188,20 @@ messages = [
 
   case user_content.chomp
   when 'dump'
-    @prompt.ok('dump messages')
+    @prompt.ok('Dump history')
     dump_message(messages)
     next
   when 'quit'
     @prompt.ok('Bye')
     exit
-  when 'delete'
-    @prompt.ok('undo')
+  when 'undo'
+    @prompt.ok('Undo')
     messages = undo(messages)
     puts messages
+    next
+  when 'clear'
+    @prompt.ok('Clear all history')
+    messages = []
     next
   end
 
@@ -207,6 +214,7 @@ messages = [
   begin
     ai_content = say_ai(response: response)
     messages.push({ role: 'assistant', content: ai_content })
+    play_sound
   rescue => e
     @prompt.error(e)
     dump_message(messages)
