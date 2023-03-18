@@ -3,6 +3,20 @@ require 'tty-prompt'
 require 'tty-progressbar'
 require 'json'
 require 'fileutils'
+require 'tty-option'
+
+############
+# Command
+############
+
+class Command
+  include TTY::Option
+
+  flag :quick do
+    short "-q"
+    long "--quick"
+  end
+end
 
 ############
 # Constant
@@ -48,14 +62,20 @@ def take_last(array, n)
   systems + array.drop(systems.size).reverse.take(n - systems.size).reverse
 end
 
-def system_content(profile_files, model_name)
+def system_content(profile_files)
+  model_name = @prompt.select('Model', profile_files.map {|f| File.basename(f, '.*') }, MODEL_OPTION)
   profile_file = profile_files.find { |f| f.include?(model_name) }
   File.open(profile_file, 'r') do |file|
     file.read
   end
 end
 
-def history_content(history_files, history)
+def history_content(history_files)
+  history = @prompt.select(
+    'History',
+    history_files.map {|f| File.basename(f, '.*') },
+    MODEL_OPTION
+  )
   history_file = history_files.find { |f| f.include?(history) }
   content = File.open(history_file, 'r') do |file|
     file.read
@@ -92,13 +112,13 @@ def request_ai(client:, bar:, messages:, temperature:)
   response
 end
 
-def say_ai(model:, response:, prompt:)
+def say_ai(response:)
   total_token = response.dig('usage', 'total_tokens')
   ai_content = response.dig('choices', 0, 'message', 'content')
 
-  prompt.warn("---- #{model}（#{total_token}） ----")
-  prompt.say("\n")
-  prompt.say(ai_content&.to_s)
+  @prompt.warn("---- AI（#{total_token}） ----")
+  @prompt.say("\n")
+  @prompt.say(ai_content&.to_s)
 
   ai_content&.to_s
 end
@@ -112,7 +132,9 @@ OpenAI.configure do |config|
 end
 
 client = OpenAI::Client.new
-prompt = TTY::Prompt.new
+cmd = Command.new
+cmd.parse
+@prompt = TTY::Prompt.new
 bar = TTY::ProgressBar.new(
   'waiting [:bar]',
   { total: nil, width: 20, clear: true, frequency: 10 }
@@ -122,10 +144,14 @@ bar = TTY::ProgressBar.new(
 # Settings
 ############
 
-# Select Model
+# Model
 model_profiles = list_files("model_profiles")
-selected_ai = prompt.select('Model', model_profiles.map {|f| File.basename(f, '.*') }, MODEL_OPTION)
-temperature = prompt.slider('Temperature', active_color: :magenta) do |range|
+system_message = cmd.params[:quick] ? '' : system_content(model_profiles)
+@prompt.ok('---- system message is ----', color: :magenta)
+@prompt.say(system_message)
+
+# Temperature
+temperature = cmd.params[:quick] ? 1.0 : @prompt.slider('Temperature', active_color: :magenta) do |range|
   range.min 0.0
   range.max 2.0
   range.step 0.1
@@ -133,24 +159,14 @@ temperature = prompt.slider('Temperature', active_color: :magenta) do |range|
   range.format '|:slider| %.1f'
 end
 
-# Sytem Log
-system_message = system_content(model_profiles, selected_ai)
-prompt.ok('---- system message is ----', color: :magenta)
-prompt.say(system_message)
-
 # History Log
 history_files = list_files("history")
-selected_history = prompt.select(
-  'History',
-  history_files.map {|f| File.basename(f, '.*') },
-  MODEL_OPTION
-)
-history_messages = history_content(history_files, selected_history)
-prompt.ok('---- history is ----', color: :magenta)
+history_messages = cmd.params[:quick] ? [] : history_content(history_files)
+@prompt.ok('---- history is ----', color: :magenta)
 history_messages.each { |msg|
   actor = msg.dig("role")
   content = msg.dig("content")
-  prompt.say("#{actor}: #{content}")
+  @prompt.say("#{actor}: #{content}")
 }
 
 messages = [
@@ -163,20 +179,20 @@ messages = [
 ############
 
 100.times do |_|
-  prompt.ok('---- User ----')
-  user_content = prompt.multiline('', echo: false).join.chomp
-  prompt.say(user_content)
+  @prompt.ok('---- User ----')
+  user_content = @prompt.multiline('', echo: false).join.chomp
+  @prompt.say(user_content)
 
   case user_content.chomp
   when 'dump'
-    prompt.ok('dump messages')
+    @prompt.ok('dump messages')
     dump_message(messages)
     next
   when 'quit'
-    prompt.ok('Bye')
+    @prompt.ok('Bye')
     exit
   when 'delete'
-    prompt.ok('undo')
+    @prompt.ok('undo')
     messages = undo(messages)
     puts messages
     next
@@ -189,10 +205,10 @@ messages = [
   )
 
   begin
-    ai_content = say_ai(model: selected_ai, response: response, prompt: prompt)
+    ai_content = say_ai(response: response)
     messages.push({ role: 'assistant', content: ai_content })
   rescue => e
-    prompt.error(e)
+    @prompt.error(e)
     dump_message(messages)
     exit
   end

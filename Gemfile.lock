@@ -13,6 +13,7 @@ GEM
     strings-ansi (0.2.0)
     tty-color (0.6.0)
     tty-cursor (0.7.1)
+    tty-option (0.2.0)
     tty-progressbar (0.18.2)
       strings-ansi (~> 0.2)
       tty-cursor (~> 0.7)
@@ -34,6 +35,7 @@ PLATFORMS
 
 DEPENDENCIES
   ruby-openai
+  tty-option
   tty-progressbar
   tty-prompt
 
