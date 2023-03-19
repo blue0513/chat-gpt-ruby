@@ -1,6 +1,6 @@
 # Makefile
 
-.PHONY: install quick run
+.PHONY: install quick run lint fix
 
 install:
 	bundle install
@@ -10,3 +10,9 @@ quick:
 
 run:
 	bundle exec ruby main.rb
+
+lint:
+	bundle exec rubocop
+
+fix:
+	bundle exec rubocop -A

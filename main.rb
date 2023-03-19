@@ -14,6 +14,8 @@ require './play_sound'
 # Command
 ############
 
+# rubocop:disable Style/Documentation
+
 class Command
   include TTY::Option
 
@@ -22,6 +24,8 @@ class Command
     long '--quick'
   end
 end
+
+# rubocop:enable Style/Documentation
 
 ############
 # Constant
@@ -64,9 +68,9 @@ def list_files(base_dir, ext)
   Dir.glob("./#{base_dir}/*").select { |f| File.file?(f) && File.extname(f) == ext }
 end
 
-def take_last(array, n)
+def take_last(array, number)
   systems = array.filter { |msg| msg[:role] == 'system' }
-  systems + array.drop(systems.size).reverse.take(n - systems.size).reverse
+  systems + array.drop(systems.size).reverse.take(number - systems.size).reverse
 end
 
 def system_content(profile_files)
@@ -193,6 +197,8 @@ messages = [
 # Main Chat
 ############
 
+# rubocop:disable Metrics/BlockLength
+
 100.times do |_|
   @prompt.ok('---- User ----')
   user_content = @prompt.multiline('', echo: false).join.chomp
@@ -233,3 +239,5 @@ messages = [
     exit
   end
 end
+
+# rubocop:enable Metrics/BlockLength

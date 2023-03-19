@@ -12,5 +12,5 @@ jobs:
       - uses: ruby/setup-ruby@v1
       - name: RuboCop
         run: |
-          bundle install
-          bundle exec rubocop
+          make install
+          make lint
