@@ -1,0 +1,16 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+
+jobs:
+  rubocop:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: ruby/setup-ruby@v1
+      - name: RuboCop
+        run: |
+          make install
+          make lint
