@@ -139,7 +139,12 @@ end
 client = OpenAI::Client.new
 cmd = Command.new
 cmd.parse
-@prompt = TTY::Prompt.new
+@prompt = TTY::Prompt.new(
+  interrupt: proc { |_|
+    @prompt.ok('Bye')
+    exit
+  }
+)
 bar = TTY::ProgressBar.new(
   'waiting [:bar]',
   { total: nil, width: 20, clear: true, frequency: 10 }
