@@ -25,7 +25,9 @@ end
 # Constant
 ############
 
-FILE_NAME_BASE = 'history.log'
+MODEL_DIR = 'model_profiles'
+HISTORY_DIR = 'history'
+FILE_NAME_BASE = 'history.json'
 MODEL_OPTION = {
   cycle: true,
   marker: true,
@@ -48,7 +50,7 @@ TEMPATURE_OPTION = {
 
 def dump_message(msg)
   date = Time.now.strftime("%Y-%m-%d_%H-%M-%S")
-  filename = "#{date}_#{FILE_NAME_BASE}"
+  filename = "#{HISTORY_DIR}/#{date}_#{FILE_NAME_BASE}"
   FileUtils.touch(filename)
 
   File.open(filename, 'w') do |f|
@@ -56,8 +58,8 @@ def dump_message(msg)
   end
 end
 
-def list_files(base_dir)
-  Dir.glob("./#{base_dir}/*").select { |f| File.file?(f) }
+def list_files(base_dir, ext)
+  Dir.glob("./#{base_dir}/*").select { |f| File.file?(f) && File.extname(f) == ext }
 end
 
 def take_last(array, n)
@@ -148,7 +150,7 @@ bar = TTY::ProgressBar.new(
 ############
 
 # Model
-model_profiles = list_files("model_profiles")
+model_profiles = list_files(MODEL_DIR, '.txt')
 system_message = cmd.params[:quick] ? '' : system_content(model_profiles)
 @prompt.ok('---- system message is ----', color: :magenta)
 @prompt.say(system_message)
@@ -163,7 +165,7 @@ temperature = cmd.params[:quick] ? 1.0 : @prompt.slider('Temperature', active_co
 end
 
 # History Log
-history_files = list_files("history")
+history_files = list_files(HISTORY_DIR, '.json')
 history_messages = cmd.params[:quick] ? [] : history_content(history_files)
 @prompt.ok('---- history is ----', color: :magenta)
 history_messages.each { |msg|

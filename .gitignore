@@ -1,1 +1,3 @@
 .envrc
+history/*.json
+model_profiles/*.txt
