@@ -91,7 +91,7 @@ def history_content(history_files)
 end
 
 def undo(msgs)
-  msgs.reverse.drop(2).reverse
+  msgs.reverse.drop(1).reverse
 end
 
 def start_progress(bar)
