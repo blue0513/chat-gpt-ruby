@@ -225,11 +225,10 @@ messages = [
 
   messages.push({ role: 'user', content: user_content })
 
-  response = request_ai(
-    client:, bar:, messages:, temperature:
-  )
-
   begin
+    response = request_ai(
+      client:, bar:, messages:, temperature:
+    )
     ai_content = say_ai(response:)
     messages.push({ role: 'assistant', content: ai_content })
     play_sound
