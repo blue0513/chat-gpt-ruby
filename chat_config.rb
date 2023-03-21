@@ -4,7 +4,7 @@ require 'json'
 require './prompt'
 
 class ChatConfig
-  attr_accessor :quick
+  attr_accessor :quick, :model_profile, :history_messages, :temperature
 
   MODEL_DIR = 'model_profiles'
   HISTORY_DIR = 'history'
@@ -19,7 +19,13 @@ class ChatConfig
 
   def initialize(quick:)
     @quick = quick
+
+    @model_profile = load_model_profile
+    @temperature = load_temperature
+    @history_messages = load_history
   end
+
+  private
 
   def load_model_profile
     model_profiles = list_files(MODEL_DIR, '.txt')
@@ -42,8 +48,6 @@ class ChatConfig
       range.format '|:slider| %.1f'
     end
   end
-
-  private
 
   def list_files(base_dir, ext)
     Dir.glob("./#{base_dir}/*").select { |f| File.file?(f) && File.extname(f) == ext }

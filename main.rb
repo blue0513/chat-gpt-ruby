@@ -7,7 +7,10 @@ require 'json'
 require 'fileutils'
 require 'tty-option'
 
-# Load other libraries
+############
+# Local Libraries
+############
+
 require './chat'
 require './chat_config'
 require './play_sound'
@@ -16,60 +19,50 @@ require './client'
 require './option'
 
 ############
-# Constant
-############
-
-HISTORY_DIR = 'history'
-FILE_NAME_BASE = 'history.json'
-
-############
 # Methods
 ############
 
-def say_ai(response:)
-  total_token = response.dig('usage', 'total_tokens')
-  ai_content = response.dig('choices', 0, 'message', 'content')
+def show_config(config:)
+  Prompt.prompt.ok('---- system message is ----', color: :magenta)
+  Prompt.prompt.say(config.model_profile)
+  Prompt.prompt.ok('---- history is ----', color: :magenta)
+  config.history_messages.each do |msg|
+    Prompt.prompt.say("#{msg['role']}: #{msg['content']}")
+  end
+end
 
-  { ai_content:, total_token: }
+def client_request(client:, messages:, temperature:)
+  progress_bar = Prompt.start_progress
+  response = client.request(messages:, temperature:)
+  Prompt.stop_progress(progress_bar)
+
+  total_token = response.dig('usage', 'total_tokens')
+  content = response.dig('choices', 0, 'message', 'content')
+
+  Prompt.prompt.warn("---- AI（#{total_token}） ----")
+  Prompt.prompt.say("\n")
+  Prompt.prompt.say(content&.to_s)
+
+  content
 end
 
 ############
 # Init
 ############
 
-# Command line options
 option = Option.new
-
-# Model
-chat_config = ChatConfig.new(quick: option.cmd.params[:quick])
-model_profile = chat_config.load_model_profile
-
-Prompt.prompt.ok('---- system message is ----', color: :magenta)
-Prompt.prompt.say(model_profile)
-
-# Temperature
-temperature = chat_config.load_temperature
-
-# History Log
-history_messages = chat_config.load_history
-
-Prompt.prompt.ok('---- history is ----', color: :magenta)
-history_messages.each do |msg|
-  Prompt.prompt.say("#{msg['role']}: #{msg['content']}")
-end
-
-messages = [
-  { role: 'system', content: model_profile.to_s },
-  *history_messages
-]
-
-# Client
-
 client = Client.new
+chat_config = ChatConfig.new(quick: option.cmd.params[:quick])
+messages = [
+  { role: 'system', content: chat_config.model_profile.to_s },
+  *chat_config.history_messages
+]
 
 ############
 # Main Chat
 ############
+
+show_config(config: chat_config)
 
 100.times do |_|
   user_input_result = Chat.read_user_input(histories: messages)
@@ -79,18 +72,9 @@ client = Client.new
   messages.push({ role: 'user', content: user_input_result[:user_content] })
 
   begin
-    progress_bar = Prompt.start_progress
-    response = client.request(messages:, temperature:)
-    Prompt.stop_progress(progress_bar)
-
-    content = say_ai(response:)
-
-    Prompt.prompt.warn("---- AI（#{content[:total_token]}） ----")
-    Prompt.prompt.say("\n")
-    Prompt.prompt.say(content[:ai_content]&.to_s)
-
-    messages.push({ role: 'assistant', content: content[:ai_content] })
-    play_sound
+    response = client_request(client:, messages:, temperature: chat_config.temperature)
+    messages.push({ role: 'assistant', content: response })
+    Sound.play_sound
   rescue StandardError => e
     Prompt.prompt.error(e)
     Chat.dump_message(messages)
