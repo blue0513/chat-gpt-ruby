@@ -12,23 +12,7 @@ require './chat_config'
 require './play_sound'
 require './prompt'
 require './client'
-
-############
-# Command
-############
-
-# rubocop:disable Style/Documentation
-
-class Command
-  include TTY::Option
-
-  flag :quick do
-    short '-q'
-    long '--quick'
-  end
-end
-
-# rubocop:enable Style/Documentation
+require './option'
 
 ############
 # Constant
@@ -58,28 +42,23 @@ end
 def say_ai(response:)
   total_token = response.dig('usage', 'total_tokens')
   ai_content = response.dig('choices', 0, 'message', 'content')
-  ai_content&.to_s
+
+  { ai_content:, total_token: }
 end
 
 ############
 # Init
 ############
 
-cmd = Command.new
-prompter = Prompt.new
-
-cmd.parse
-
-############
-# Settings
-############
+# Command line options
+option = Option.new
 
 # Model
-chat_config = ChatConfig.new(quick: cmd.params[:quick])
+chat_config = ChatConfig.new(quick: option.cmd.params[:quick])
 model_profile = chat_config.load_model_profile
 
-prompter.prompt.ok('---- system message is ----', color: :magenta)
-prompter.prompt.say(model_profile)
+Prompt.prompt.ok('---- system message is ----', color: :magenta)
+Prompt.prompt.say(model_profile)
 
 # Temperature
 temperature = chat_config.load_temperature
@@ -87,9 +66,9 @@ temperature = chat_config.load_temperature
 # History Log
 history_messages = chat_config.load_history
 
-prompter.prompt.ok('---- history is ----', color: :magenta)
+Prompt.prompt.ok('---- history is ----', color: :magenta)
 history_messages.each do |msg|
-  prompter.prompt.say("#{msg['role']}: #{msg['content']}")
+  Prompt.prompt.say("#{msg['role']}: #{msg['content']}")
 end
 
 messages = [
@@ -108,25 +87,25 @@ client = Client.new
 # rubocop:disable Metrics/BlockLength
 
 100.times do |_|
-  prompter.prompt.ok('---- User ----')
-  user_content = prompter.prompt.multiline('', echo: false).join.chomp
-  prompter.prompt.say(user_content)
+  Prompt.prompt.ok('---- User ----')
+  user_content = Prompt.prompt.multiline('', echo: false).join.chomp
+  Prompt.prompt.say(user_content)
 
   case user_content.chomp
   when 'dump'
-    prompter.prompt.ok('Dump history')
+    Prompt.prompt.ok('Dump history')
     dump_message(messages)
     next
   when 'quit'
-    prompter.prompt.ok('Bye')
+    Prompt.prompt.ok('Bye')
     exit
   when 'undo'
-    prompter.prompt.ok('Undo')
+    Prompt.prompt.ok('Undo')
     messages = undo(messages)
     puts messages
     next
   when 'clear'
-    prompter.prompt.ok('Clear all history')
+    Prompt.prompt.ok('Clear all history')
     messages = []
     next
   end
@@ -134,20 +113,20 @@ client = Client.new
   messages.push({ role: 'user', content: user_content })
 
   begin
-    prompter.start_progress
+    progress_bar = Prompt.start_progress
     response = client.request(messages:, temperature:)
-    prompter.stop_progress
+    Prompt.stop_progress(progress_bar)
 
-    ai_content = say_ai(response:)
+    content = say_ai(response:)
 
-    prompter.prompt.warn("---- AI（#{total_token}） ----")
-    prompter.prompt.say("\n")
-    prompter.prompt.say(ai_content&.to_s)
+    Prompt.prompt.warn("---- AI（#{content[:total_token]}） ----")
+    Prompt.prompt.say("\n")
+    Prompt.prompt.say(content[:ai_content]&.to_s)
 
-    messages.push({ role: 'assistant', content: ai_content })
+    messages.push({ role: 'assistant', content: content[:ai_content] })
     play_sound
   rescue StandardError => e
-    prompter.prompt.error(e)
+    Prompt.prompt.error(e)
     dump_message(messages)
     exit
   end
