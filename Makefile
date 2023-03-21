@@ -6,10 +6,10 @@ install:
 	bundle install
 
 quick:
-	bundle exec ruby main.rb --quick
+	bundle exec ruby src/main.rb --quick
 
 run:
-	bundle exec ruby main.rb
+	bundle exec ruby src/main.rb
 
 lint:
 	bundle exec rubocop

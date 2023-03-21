@@ -11,12 +11,12 @@ require 'tty-option'
 # Local Libraries
 ############
 
-require './chat'
-require './chat_config'
-require './play_sound'
-require './prompt'
-require './client'
-require './option'
+require './src/chat'
+require './src/chat_config'
+require './src/play_sound'
+require './src/prompt'
+require './src/client'
+require './src/option'
 
 ############
 # Methods
@@ -64,20 +64,17 @@ messages = [
 
 show_config(config: chat_config)
 
-100.times do |_|
+loop do
   user_input_result = Chat.read_user_input(histories: messages)
   next if user_input_result[:command_executed]
 
   messages = user_input_result[:histories]
   messages.push({ role: 'user', content: user_input_result[:user_content] })
-
-  begin
-    response = client_request(client:, messages:, temperature: chat_config.temperature)
-    messages.push({ role: 'assistant', content: response })
-    Sound.play_sound
-  rescue StandardError => e
-    Prompt.prompt.error(e)
-    Chat.dump_message(messages)
-    exit
-  end
+  response = client_request(client:, messages:, temperature: chat_config.temperature)
+  messages.push({ role: 'assistant', content: response })
+  Sound.play_sound
+rescue StandardError => e
+  Prompt.prompt.error(e)
+  Chat.dump_message(messages)
+  exit
 end

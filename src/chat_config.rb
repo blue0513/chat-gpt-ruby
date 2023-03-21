@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require 'json'
-require './prompt'
+require './src/prompt'
 
 class ChatConfig
   attr_accessor :quick, :model_profile, :history_messages, :temperature
@@ -56,7 +56,7 @@ class ChatConfig
   def system_content(profile_files)
     model_name = Prompt.prompt.select('Model', profile_files.map { |f| File.basename(f, '.*') }, MODEL_OPTION)
     profile_file = profile_files.find { |f| f.include?(model_name) }
-    File.open(profile_file, 'r', &:read)
+    File.read(profile_file)
   end
 
   def history_content(history_files)
@@ -66,7 +66,7 @@ class ChatConfig
       MODEL_OPTION
     )
     history_file = history_files.find { |f| f.include?(history) }
-    content = File.open(history_file, 'r', &:read)
+    content = File.read(history_file)
     JSON.parse(content)
   end
 end

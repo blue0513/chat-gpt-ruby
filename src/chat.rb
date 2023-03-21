@@ -4,6 +4,8 @@ class Chat
   HISTORY_DIR = 'history'
   FILE_NAME_BASE = 'history.json'
 
+  # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
+
   def self.read_user_input(histories:)
     Prompt.prompt.ok('---- User ----')
     user_content = Prompt.prompt.multiline('', echo: false).join.chomp
@@ -31,6 +33,8 @@ class Chat
 
     { user_content:, histories:, command_executed: }
   end
+
+  # rubocop:enable Metrics/AbcSize, Metrics/MethodLength
 
   def self.dump_message(messages)
     date = Time.now.strftime('%Y-%m-%d_%H-%M-%S')
