@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'tty-option'
+
 class Option
   attr_accessor :cmd
 

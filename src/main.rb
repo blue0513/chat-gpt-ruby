@@ -1,16 +1,5 @@
 # frozen_string_literal: true
 
-require 'openai'
-require 'tty-prompt'
-require 'tty-progressbar'
-require 'json'
-require 'fileutils'
-require 'tty-option'
-
-############
-# Local Libraries
-############
-
 require './src/chat'
 require './src/chat_config'
 require './src/play_sound'

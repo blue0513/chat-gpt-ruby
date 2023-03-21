@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'json'
+require 'openai'
 require './src/prompt'
 
 class ChatConfig

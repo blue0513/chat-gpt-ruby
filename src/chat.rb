@@ -1,5 +1,8 @@
 # frozen_string_literal: true
 
+require 'fileutils'
+require 'json'
+
 class Chat
   HISTORY_DIR = 'history'
   FILE_NAME_BASE = 'history.json'
