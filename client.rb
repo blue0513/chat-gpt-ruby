@@ -1,5 +1,6 @@
-class Client
+# frozen_string_literal: true
 
+class Client
   MODEL = 'gpt-3.5-turbo'
 
   def initialize

@@ -1,5 +1,6 @@
-class Option
+# frozen_string_literal: true
 
+class Option
   attr_accessor :cmd
 
   def initialize
@@ -15,5 +16,4 @@ class Option
       long '--quick'
     end
   end
-
 end

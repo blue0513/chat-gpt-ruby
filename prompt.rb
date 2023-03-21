@@ -2,13 +2,12 @@
 
 class Prompt
   def self.prompt
-    prmpt = TTY::Prompt.new(
+    TTY::Prompt.new(
       interrupt: proc { |_|
         prmpt.ok('Bye')
         exit
       }
     )
-    prmpt
   end
 
   def self.start_progress

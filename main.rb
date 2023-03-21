@@ -8,6 +8,7 @@ require 'fileutils'
 require 'tty-option'
 
 # Load other libraries
+require './chat'
 require './chat_config'
 require './play_sound'
 require './prompt'
@@ -24,20 +25,6 @@ FILE_NAME_BASE = 'history.json'
 ############
 # Methods
 ############
-
-def dump_message(msg)
-  date = Time.now.strftime('%Y-%m-%d_%H-%M-%S')
-  filename = "#{HISTORY_DIR}/#{date}_#{FILE_NAME_BASE}"
-  FileUtils.touch(filename)
-
-  File.open(filename, 'w') do |f|
-    f.puts(msg.to_json)
-  end
-end
-
-def undo(msgs)
-  msgs.reverse.drop(1).reverse
-end
 
 def say_ai(response:)
   total_token = response.dig('usage', 'total_tokens')
@@ -84,33 +71,12 @@ client = Client.new
 # Main Chat
 ############
 
-# rubocop:disable Metrics/BlockLength
-
 100.times do |_|
-  Prompt.prompt.ok('---- User ----')
-  user_content = Prompt.prompt.multiline('', echo: false).join.chomp
-  Prompt.prompt.say(user_content)
+  user_input_result = Chat.read_user_input(histories: messages)
+  next if user_input_result[:command_executed]
 
-  case user_content.chomp
-  when 'dump'
-    Prompt.prompt.ok('Dump history')
-    dump_message(messages)
-    next
-  when 'quit'
-    Prompt.prompt.ok('Bye')
-    exit
-  when 'undo'
-    Prompt.prompt.ok('Undo')
-    messages = undo(messages)
-    puts messages
-    next
-  when 'clear'
-    Prompt.prompt.ok('Clear all history')
-    messages = []
-    next
-  end
-
-  messages.push({ role: 'user', content: user_content })
+  messages = user_input_result[:histories]
+  messages.push({ role: 'user', content: user_input_result[:user_content] })
 
   begin
     progress_bar = Prompt.start_progress
@@ -127,9 +93,7 @@ client = Client.new
     play_sound
   rescue StandardError => e
     Prompt.prompt.error(e)
-    dump_message(messages)
+    Chat.dump_message(messages)
     exit
   end
 end
-
-# rubocop:enable Metrics/BlockLength
