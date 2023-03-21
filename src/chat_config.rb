@@ -20,7 +20,9 @@ class ChatConfig
 
   def initialize(quick:)
     @quick = quick
+  end
 
+  def configure!
     @model_profile = load_model_profile
     @temperature = load_temperature
     @history_messages = load_history

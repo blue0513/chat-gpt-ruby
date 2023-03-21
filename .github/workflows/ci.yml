@@ -14,3 +14,13 @@ jobs:
         run: |
           make install
           make lint
+
+  rspec:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: ruby/setup-ruby@v1
+      - name: RSpec
+        run: |
+          make install
+          make test
