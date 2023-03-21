@@ -25,16 +25,16 @@ class Chat
       exit
     when 'undo'
       Prompt.prompt.ok('Undo')
-      histories = undo(histories)
+      undo!(histories)
       puts histories
       command_executed = true
     when 'clear'
       Prompt.prompt.ok('Clear all history')
-      histories = clear_messages(histories)
+      clear_messages!(histories)
       command_executed = true
     end
 
-    { user_content:, histories:, command_executed: }
+    { user_content:, command_executed: }
   end
 
   # rubocop:enable Metrics/AbcSize, Metrics/MethodLength
@@ -45,17 +45,18 @@ class Chat
     FileUtils.touch(filename)
 
     File.open(filename, 'w') do |f|
-      f.puts(messages.to_json)
+      json = JSON.pretty_generate(messages)
+      f.puts(json)
     end
 
     Prompt.prompt.ok("Dumped: #{filename}")
   end
 
-  def self.undo(messages)
-    messages.reverse.drop(2).reverse
+  def self.undo!(messages)
+    messages.pop(2)
   end
 
-  def self.clear_messages(_messages)
-    []
+  def self.clear_messages!(messages)
+    messages.clear
   end
 end

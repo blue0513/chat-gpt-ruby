@@ -44,10 +44,18 @@ RSpec.describe Main do
   end
 
   describe 'chat!' do
+    let(:expected) do
+      [
+        { content: '', role: 'system' },
+        { content: 'foobar', role: 'user' },
+        { content: 'Hello world', role: 'assistant' }
+      ]
+    end
+
     before do
       allow(Chat)
         .to receive(:read_user_input)
-        .and_return({ command_executed: false, histories: [], user_content: 'foobar' })
+        .and_return({ command_executed: false, user_content: 'foobar' })
     end
 
     it 'does not raise error' do
@@ -58,9 +66,7 @@ RSpec.describe Main do
     it 'updates history' do
       main = described_class.new
       main.chat!
-      expect(main.messages).to eq(
-        [{ content: 'foobar', role: 'user' }, { content: 'Hello world', role: 'assistant' }]
-      )
+      expect(main.messages).to eq(expected)
     end
 
     describe 'when error raised' do

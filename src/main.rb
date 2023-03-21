@@ -23,13 +23,10 @@ class Main
     show_config(config: @chat_config)
   end
 
-  # rubocop:disable Metrics/MethodLength
-
   def chat!
     user_input_result = Chat.read_user_input(histories: @messages)
     return if user_input_result[:command_executed]
 
-    @messages = user_input_result[:histories]
     @messages.push({ role: 'user', content: user_input_result[:user_content] })
     response = client_request(client: @client, messages: @messages, temperature: @chat_config.temperature)
     @messages.push({ role: 'assistant', content: response })
@@ -39,8 +36,6 @@ class Main
     Chat.dump_message(@messages)
     exit
   end
-
-  # rubocop:enable Metrics/MethodLength
 
   private
 
