@@ -47,6 +47,8 @@ class Chat
     File.open(filename, 'w') do |f|
       f.puts(messages.to_json)
     end
+
+    Prompt.prompt.ok("Dumped: #{filename}")
   end
 
   def self.undo(messages)
