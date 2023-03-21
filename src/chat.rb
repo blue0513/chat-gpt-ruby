@@ -50,10 +50,10 @@ class Chat
   end
 
   def self.undo(messages)
-    messages.reverse.drop(1).reverse
+    messages.reverse.drop(2).reverse
   end
 
-  def self.clear_message(_messages)
+  def self.clear_messages(_messages)
     []
   end
 end
