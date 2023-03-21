@@ -1,5 +1,7 @@
 # chat-gpt-ruby
 
+[![CI](https://github.com/blue0513/chat-gpt-ruby/actions/workflows/ci.yml/badge.svg)](https://github.com/blue0513/chat-gpt-ruby/actions/workflows/ci.yml)
+
 ## Preparation
 
 1. Set the `OPENAI_ACCESS_TOKEN` environment variable by editing `.envrc` or typing `export OPENAI_ACCESS_TOKEN`.
