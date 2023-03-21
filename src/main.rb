@@ -7,63 +7,64 @@ require './src/prompt'
 require './src/client'
 require './src/option'
 
-############
-# Methods
-############
+class Main
+  attr_accessor :option, :client, :chat_config, :messages
 
-def show_config(config:)
-  Prompt.prompt.ok('---- system message is ----', color: :magenta)
-  Prompt.prompt.say(config.model_profile)
-  Prompt.prompt.ok('---- history is ----', color: :magenta)
-  config.history_messages.each do |msg|
-    Prompt.prompt.say("#{msg['role']}: #{msg['content']}")
+  def initialize
+    @option = Option.new
+    @client = Client.new
+    @chat_config = ChatConfig.new(quick: option.cmd.params[:quick])
+    @chat_config.configure!
+    @messages = [
+      { role: 'system', content: @chat_config.model_profile.to_s },
+      *@chat_config.history_messages
+    ]
+
+    show_config(config: @chat_config)
   end
-end
 
-def client_request(client:, messages:, temperature:)
-  progress_bar = Prompt.start_progress
-  response = client.request(messages:, temperature:)
-  Prompt.stop_progress(progress_bar)
+  # rubocop:disable Metrics/MethodLength
 
-  total_token = response.dig('usage', 'total_tokens')
-  content = response.dig('choices', 0, 'message', 'content')
+  def chat!
+    user_input_result = Chat.read_user_input(histories: @messages)
+    return if user_input_result[:command_executed]
 
-  Prompt.prompt.warn("---- AI（#{total_token}） ----")
-  Prompt.prompt.say("\n")
-  Prompt.prompt.say(content&.to_s)
+    @messages = user_input_result[:histories]
+    @messages.push({ role: 'user', content: user_input_result[:user_content] })
+    response = client_request(client: @client, messages: @messages, temperature: @chat_config.temperature)
+    @messages.push({ role: 'assistant', content: response })
+    Sound.play_sound
+  rescue StandardError => e
+    Prompt.prompt.error(e)
+    Chat.dump_message(@messages)
+    exit
+  end
 
-  content
-end
+  # rubocop:enable Metrics/MethodLength
 
-############
-# Init
-############
+  private
 
-option = Option.new
-client = Client.new
-chat_config = ChatConfig.new(quick: option.cmd.params[:quick])
-messages = [
-  { role: 'system', content: chat_config.model_profile.to_s },
-  *chat_config.history_messages
-]
+  def show_config(config:)
+    Prompt.prompt.ok('---- system message is ----', color: :magenta)
+    Prompt.prompt.say(config.model_profile)
+    Prompt.prompt.ok('---- history is ----', color: :magenta)
+    config.history_messages.each do |msg|
+      Prompt.prompt.say("#{msg['role']}: #{msg['content']}")
+    end
+  end
 
-############
-# Main Chat
-############
+  def client_request(client:, messages:, temperature:)
+    progress_bar = Prompt.start_progress
+    response = client.request(messages:, temperature:)
+    Prompt.stop_progress(progress_bar)
 
-show_config(config: chat_config)
+    total_token = response.dig('usage', 'total_tokens')
+    content = response.dig('choices', 0, 'message', 'content')
 
-loop do
-  user_input_result = Chat.read_user_input(histories: messages)
-  next if user_input_result[:command_executed]
+    Prompt.prompt.warn("---- AI（#{total_token}） ----")
+    Prompt.prompt.say("\n")
+    Prompt.prompt.say(content&.to_s)
 
-  messages = user_input_result[:histories]
-  messages.push({ role: 'user', content: user_input_result[:user_content] })
-  response = client_request(client:, messages:, temperature: chat_config.temperature)
-  messages.push({ role: 'assistant', content: response })
-  Sound.play_sound
-rescue StandardError => e
-  Prompt.prompt.error(e)
-  Chat.dump_message(messages)
-  exit
+    content
+  end
 end
