@@ -31,13 +31,17 @@ class ChatConfig
   private
 
   def load_model_profile
+    return '' if @quick
+
     model_profiles = list_files(MODEL_DIR, '.txt')
-    @quick ? '' : system_content(model_profiles)
+    model_profiles.empty? ? '' : system_content(model_profiles)
   end
 
   def load_history
+    return [] if @quick
+
     history_files = list_files(HISTORY_DIR, '.json')
-    @quick ? [] : history_content(history_files)
+    history_files.empty? ? [] : history_content(history_files)
   end
 
   def load_temperature
