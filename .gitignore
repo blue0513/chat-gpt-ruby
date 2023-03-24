@@ -1,3 +1,7 @@
 .envrc
+
 history/*.json
+!history/empty.json
+
 model_profiles/*.txt
+!model_profiles/empty.txt
