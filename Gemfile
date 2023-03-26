@@ -2,6 +2,7 @@
 
 source 'https://rubygems.org'
 
+gem 'json-schema'
 gem 'rubocop', require: false
 gem 'ruby-openai'
 gem 'tty-option'

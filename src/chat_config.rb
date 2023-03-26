@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'json'
+require 'json-schema'
 require 'openai'
 require './src/prompt'
 
@@ -18,6 +19,15 @@ class ChatConfig
     active_color: :magenta
   }.freeze
 
+  HISTORY_SCHEMA = {
+    type: 'object',
+    required: %w[role content],
+    properties: {
+      role: { type: 'string' },
+      content: { type: 'string' }
+    }
+  }.freeze
+
   def initialize(quick:)
     @quick = quick
   end
@@ -26,9 +36,23 @@ class ChatConfig
     @model_profile = load_model_profile
     @temperature = load_temperature
     @history_messages = load_history
+
+    return if history_valid?(@history_messages)
+
+    Prompt.prompt.error('history file is not valid')
+    exit
   end
 
   private
+
+  def history_valid?(history_messages)
+    history_messages.all? do |history|
+      JSON::Validator.validate!(HISTORY_SCHEMA, history)
+    rescue JSON::Schema::ValidationError => e
+      Prompt.prompt.error(e.message)
+      false
+    end
+  end
 
   def load_model_profile
     return '' if @quick
