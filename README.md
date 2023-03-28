@@ -2,6 +2,8 @@
 
 [![CI](https://github.com/blue0513/chat-gpt-ruby/actions/workflows/ci.yml/badge.svg)](https://github.com/blue0513/chat-gpt-ruby/actions/workflows/ci.yml)
 
+<img src="https://user-images.githubusercontent.com/8979468/228260595-3d887fbf-4c7d-4b66-b50c-fb94b6688c39.gif" width="600">
+
 This program allows for quick communication with ChatGPT, a customizable chatbot.   
 You can customize the `model_profile` and `history` for a personalized chat experience.   
 The `model_profile` is the AI's defined personality, and the `history` is the previous conversation between the user and ChatGPT.
