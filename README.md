@@ -2,50 +2,71 @@
 
 [![CI](https://github.com/blue0513/chat-gpt-ruby/actions/workflows/ci.yml/badge.svg)](https://github.com/blue0513/chat-gpt-ruby/actions/workflows/ci.yml)
 
+This program allows for quick communication with ChatGPT, a customizable chatbot.   
+You can customize the `model_profile` and `history` for a personalized chat experience.   
+The `model_profile` is the AI's defined personality, and the `history` is the previous conversation between the user and ChatGPT.
+
+*Technically, the `model_profile` is a prompt with the `role` of `system`
+
 ## Preparation
 
-1. Set the `OPENAI_ACCESS_TOKEN` environment variable by editing `.envrc` or typing `export OPENAI_ACCESS_TOKEN`.
-2. Customize `model profile` and `history` to your liking.
+To set up the program, you need to set the `OPENAI_ACCESS_TOKEN` environment variable.  
+This can be done by editing the `.envrc` file or by typing `export OPENAI_ACCESS_TOKEN`.
 
-### Define model profile
+## Quick Start
 
-You can define the personality of your preferred AI (model profile).
-
-```console
-$ cp model_profiles/model.txt.example model_profiles/model.txt
-# Edit as desired. This text will be used as the `role: system` message.
-$ vi model_profiles/model.txt
-```
-
-You can add as many model profiles as you wish by adding `model_profiles/*.txt`.
-
-### Define history
-
-```console
-$ cp history/history.json.example history/history.json
-# Edit as desired. This JSON will be used as the conversation history.
-$ vi history/history.json
-```
-
-You can add more histories by adding `history/*.json`.
-
-## Usage
-
-Run the following commands:
+To start the program quickly, enter the following commands in the console:
 
 ```console
 $ make install
-$ make run
-
-# Quick run
 $ make quick
 ```
 
-## Advanced
+Type your prompt, then hit `Ctrl+D` to send the prompt to ChatGPT.
 
-You can execute the following commands:
+### Shortcuts
+
+There are several useful shortcuts you can execute:
 
 - `dump`: Save the current conversation history to the file in `history/*.json`
 - `undo`: Undo the previous step of the conversation
 - `clear`: Erase all conversation history
 - `quit`: End the conversation
+
+## Advanced Usage
+
+To access advanced options, run the following command:
+
+```console
+$ make run
+```
+
+Here, you can select your preferred `model_profile` and `history`.
+
+### Define model profile
+
+You can define the personality of your preferred AI (model profile):
+
+```console
+$ cp model_profiles/model.txt.example model_profiles/model.txt
+
+# Edit the file as desired. This text will be used as the `role: system` message.
+$ vi model_profiles/model.txt
+```
+
+You can add as many model profiles as you wish by adding `model_profiles/*.txt`.
+
+
+
+### Define history
+
+To customize the conversation history:
+
+```console
+$ cp history/history.json.example history/history.json
+
+# Edit the file as desired. This JSON will be used as the conversation history.
+$ vi history/history.json
+```
+
+You can add more histories by adding `history/*.json`.
