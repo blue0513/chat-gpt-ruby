@@ -2,10 +2,12 @@
 
 class Client
   MODEL = 'gpt-3.5-turbo'
+  MESSAGE_LENGTH = 20
 
   def initialize
     OpenAI.configure do |config|
       config.access_token = ENV.fetch('OPENAI_ACCESS_TOKEN')
+      config.request_timeout = 240 # default is 120
     end
 
     @client = OpenAI::Client.new
@@ -14,8 +16,8 @@ class Client
   def request(messages:, temperature:)
     @client.chat(
       parameters: {
-        model: 'gpt-3.5-turbo',
-        messages: take_last(messages, 20),
+        model: MODEL,
+        messages: take_last(messages, MESSAGE_LENGTH),
         temperature:
       }
     )
