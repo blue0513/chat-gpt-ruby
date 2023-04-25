@@ -10,4 +10,4 @@ gem 'tty-progressbar'
 gem 'tty-prompt'
 
 gem 'rspec', '~> 3.4'
-gem 'rubocop-rspec', '~> 2.19'
+gem 'rubocop-rspec', '~> 2.20'
