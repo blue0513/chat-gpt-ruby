@@ -9,7 +9,7 @@ GEM
       mini_mime (>= 1.0.0)
       multi_xml (>= 0.5.2)
     json (2.6.3)
-    json-schema (3.0.0)
+    json-schema (4.0.0)
       addressable (>= 2.8)
     mini_mime (1.1.2)
     multi_xml (0.6.0)
