@@ -49,16 +49,11 @@ class Main
   end
 
   def client_request(client:, messages:, temperature:)
-    progress_bar = Prompt.start_progress
-    response = client.request(messages:, temperature:)
-    Prompt.stop_progress(progress_bar)
-
-    total_token = response.dig('usage', 'total_tokens')
-    content = response.dig('choices', 0, 'message', 'content')
-
-    Prompt.prompt.warn("---- AI（#{total_token}） ----")
+    Prompt.prompt.warn('---- AI ----')
     Prompt.prompt.say("\n")
-    Prompt.prompt.say(content&.to_s)
+    # Processed by Stream and output to stdout
+    content = client.request(messages:, temperature:)
+    Prompt.prompt.say("\n")
 
     content
   end
