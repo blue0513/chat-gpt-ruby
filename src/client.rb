@@ -14,13 +14,16 @@ class Client
   end
 
   def request(messages:, temperature:)
+    response_content = []
     @client.chat(
       parameters: {
         model: MODEL,
         messages: take_last(messages, MESSAGE_LENGTH),
-        temperature:
+        temperature:,
+        stream: proc do |chunk, _bytesize| handle_stream!(response_content, chunk) end
       }
     )
+    response_content.join
   end
 
   private
@@ -29,5 +32,11 @@ class Client
     systems = messages.filter { |msg| msg[:role] == 'system' }
     histories = messages.drop(systems.size).reverse.take(history_length - systems.size).reverse
     systems + histories
+  end
+
+  def handle_stream!(response_content, chunk)
+    stream_str = chunk.dig('choices', 0, 'delta', 'content')
+    response_content << stream_str
+    print stream_str
   end
 end

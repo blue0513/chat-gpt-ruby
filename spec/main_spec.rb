@@ -4,26 +4,7 @@ require_relative '../src/main'
 
 RSpec.describe Main do
   let(:client_double) { instance_double(Client) }
-  let(:client_response) do
-    {
-      'id' => 'chatcmpl-123',
-      'object' => 'chat.completion',
-      'created' => 1_677_652_288,
-      'choices' => [{
-        'index' => 0,
-        'message' => {
-          'role' => 'assistant',
-          'content' => 'Hello world'
-        },
-        'finish_reason' => 'stop'
-      }],
-      'usage' => {
-        'prompt_tokens' => 9,
-        'completion_tokens' => 12,
-        'total_tokens' => 21
-      }
-    }
-  end
+  let(:client_response) { 'Hello world' }
   let(:chat_config_double) { instance_double(ChatConfig) }
 
   before do
