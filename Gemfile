@@ -9,4 +9,4 @@ gem 'tty-prompt'
 
 gem 'rspec', '~> 3.4'
 gem 'rubocop', require: false
-gem 'rubocop-rspec', '~> 2.20'
+gem 'rubocop-rspec', '~> 2.22'
