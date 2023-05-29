@@ -64,7 +64,7 @@ GEM
     ruby2_keywords (0.0.5)
     tty-color (0.6.0)
     tty-cursor (0.7.1)
-    tty-option (0.2.0)
+    tty-option (0.3.0)
     tty-prompt (0.23.1)
       pastel (~> 0.8)
       tty-reader (~> 0.8)
