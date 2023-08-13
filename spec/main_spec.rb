@@ -12,10 +12,8 @@ RSpec.describe Main do
     allow(client_double).to receive(:request).and_return(client_response)
 
     allow(ChatConfig).to receive(:new).and_return(chat_config_double)
-    allow(chat_config_double).to receive(:model_profile).and_return('')
-    allow(chat_config_double).to receive(:history_messages).and_return([])
-    allow(chat_config_double).to receive(:temperature).and_return(1.0)
-    allow(chat_config_double).to receive(:configure!).and_return(nil)
+    allow(chat_config_double).to receive_messages(model_profile: '', history_messages: [], temperature: 1.0,
+                                                  configure!: nil)
   end
 
   describe 'initialize' do
