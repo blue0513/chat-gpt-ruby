@@ -59,7 +59,7 @@ GEM
       rubocop (~> 1.41)
     rubocop-factory_bot (2.23.1)
       rubocop (~> 1.33)
-    rubocop-rspec (2.23.2)
+    rubocop-rspec (2.24.0)
       rubocop (~> 1.33)
       rubocop-capybara (~> 2.17)
       rubocop-factory_bot (~> 2.22)
@@ -91,7 +91,7 @@ DEPENDENCIES
   json-schema
   rspec (~> 3.4)
   rubocop
-  rubocop-rspec (~> 2.23)
+  rubocop-rspec (~> 2.24)
   ruby-openai
   tty-option
   tty-prompt
