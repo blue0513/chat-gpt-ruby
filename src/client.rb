@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class Client
-  MODEL = 'gpt-3.5-turbo'
+  MODEL = 'gpt-4-1106-preview'
   MESSAGE_LENGTH = 20
 
   def initialize
