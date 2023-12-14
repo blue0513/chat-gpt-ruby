@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'tiktoken_ruby'
+
 require './src/chat'
 require './src/chat_config'
 require './src/play_sound'
@@ -31,6 +33,9 @@ class Main
     response = client_request(client: @client, messages: @messages, temperature: @chat_config.temperature)
     @messages.push({ role: 'assistant', content: response })
     Sound.play_sound
+
+    total_messages = @messages.map { |msg| msg[:content] }.join
+    print_token(model: client.model, content: total_messages)
   rescue StandardError => e
     Prompt.prompt.error(e)
     Chat.dump_message(@messages)
@@ -56,5 +61,12 @@ class Main
     Prompt.prompt.say("\n")
 
     content
+  end
+
+  def print_token(model:, content:)
+    Prompt.prompt.say("\n")
+    enc = Tiktoken.encoding_for_model(model)
+    length = enc.encode(content).length
+    Prompt.prompt.ok("token length: #{length}", color: :black)
   end
 end

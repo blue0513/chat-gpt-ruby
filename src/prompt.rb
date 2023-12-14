@@ -6,7 +6,7 @@ class Prompt
   def self.prompt
     TTY::Prompt.new(
       interrupt: proc { |_|
-        prmpt.ok('Bye')
+        prompt.ok('Bye')
         exit
       }
     )

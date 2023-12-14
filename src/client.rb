@@ -26,6 +26,10 @@ class Client
     response_content.join
   end
 
+  def model
+    MODEL
+  end
+
   private
 
   def take_last(messages, history_length)

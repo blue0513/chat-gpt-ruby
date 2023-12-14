@@ -10,3 +10,5 @@ gem 'tty-prompt'
 gem 'rspec', '~> 3.4'
 gem 'rubocop', require: false
 gem 'rubocop-rspec', '~> 2.25'
+
+gem 'tiktoken_ruby', '~> 0.0.6'
