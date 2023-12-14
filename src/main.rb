@@ -13,16 +13,7 @@ class Main
   attr_accessor :option, :client, :chat_config, :messages
 
   def initialize
-    @option = Option.new
-    @chat_config = ChatConfig.new(quick: option.cmd.params[:quick], model: option.cmd.params[:model])
-    @chat_config.configure!
-
-    @client = Client.new(model: @chat_config.model)
-    @messages = [
-      { role: 'system', content: @chat_config.model_profile.to_s },
-      *@chat_config.history_messages
-    ]
-
+    build!
     show_config(config: @chat_config, model: @client.model)
   end
 
@@ -43,9 +34,21 @@ class Main
 
   private
 
+  def build!
+    @option = Option.new
+    @chat_config = ChatConfig.new(quick: @option.cmd.params[:quick], model: @option.cmd.params[:model])
+    @chat_config.configure!
+    @client = Client.new(model: @chat_config.model)
+    @messages = [{ role: 'system', content: @chat_config.model_profile.to_s }, *@chat_config.history_messages]
+  end
+
   def show_config(config:, model:)
     Prompt.prompt.ok('---- model is ----', color: :magenta)
     Prompt.prompt.say(model)
+    show_history(config:)
+  end
+
+  def show_history(config:)
     Prompt.prompt.ok('---- system message is ----', color: :magenta)
     Prompt.prompt.say(config.model_profile)
     Prompt.prompt.ok('---- history is ----', color: :magenta)

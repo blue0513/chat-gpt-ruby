@@ -19,7 +19,7 @@ class Option
     end
 
     option :model do
-      long "--model string"
+      long '--model string'
     end
   end
 end
