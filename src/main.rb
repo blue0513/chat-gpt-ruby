@@ -10,8 +10,6 @@ require './src/client'
 require './src/option'
 
 class Main
-  attr_accessor :option, :client, :chat_config, :messages
-
   def initialize
     build!
     show_config(config: @chat_config, model: @client.model)
@@ -27,7 +25,7 @@ class Main
     Sound.play_sound
 
     total_messages = @messages.map { |msg| msg[:content] }.join
-    print_token(model: client.model, content: total_messages)
+    print_token(model: @client.model, content: total_messages)
   rescue StandardError => e
     catch_error(error: e, messages: @messages)
   end
