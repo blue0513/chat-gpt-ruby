@@ -14,15 +14,16 @@ class Main
 
   def initialize
     @option = Option.new
-    @client = Client.new
-    @chat_config = ChatConfig.new(quick: option.cmd.params[:quick])
+    @chat_config = ChatConfig.new(quick: option.cmd.params[:quick], model: option.cmd.params[:model])
     @chat_config.configure!
+
+    @client = Client.new(model: @chat_config.model)
     @messages = [
       { role: 'system', content: @chat_config.model_profile.to_s },
       *@chat_config.history_messages
     ]
 
-    show_config(config: @chat_config)
+    show_config(config: @chat_config, model: @client.model)
   end
 
   def chat!
@@ -42,7 +43,9 @@ class Main
 
   private
 
-  def show_config(config:)
+  def show_config(config:, model:)
+    Prompt.prompt.ok('---- model is ----', color: :magenta)
+    Prompt.prompt.say(model)
     Prompt.prompt.ok('---- system message is ----', color: :magenta)
     Prompt.prompt.say(config.model_profile)
     Prompt.prompt.ok('---- history is ----', color: :magenta)

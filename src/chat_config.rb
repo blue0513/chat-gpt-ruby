@@ -6,7 +6,7 @@ require 'openai'
 require './src/prompt'
 
 class ChatConfig
-  attr_accessor :quick, :model_profile, :history_messages, :temperature
+  attr_accessor :quick, :model, :model_profile, :history_messages, :temperature
 
   MODEL_DIR = 'model_profiles'
   HISTORY_DIR = 'history'
@@ -28,8 +28,9 @@ class ChatConfig
     }
   }.freeze
 
-  def initialize(quick:)
+  def initialize(quick:, model:)
     @quick = quick
+    @model = model
   end
 
   def configure!

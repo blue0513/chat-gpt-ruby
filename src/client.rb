@@ -1,15 +1,18 @@
 # frozen_string_literal: true
 
 class Client
-  MODEL = 'gpt-4-1106-preview'
+  DEFAULT_MODEL = 'gpt-4-1106-preview'
   MESSAGE_LENGTH = 20
 
-  def initialize
+  attr_accessor :model
+
+  def initialize(model:)
     OpenAI.configure do |config|
       config.access_token = ENV.fetch('OPENAI_ACCESS_TOKEN')
       config.request_timeout = 240 # default is 120
     end
 
+    @model = model || DEFAULT_MODEL
     @client = OpenAI::Client.new
   end
 
@@ -17,17 +20,13 @@ class Client
     response_content = []
     @client.chat(
       parameters: {
-        model: MODEL,
+        model: @model,
         messages: take_last(messages, MESSAGE_LENGTH),
         temperature:,
         stream: proc do |chunk, _bytesize| handle_stream!(response_content, chunk) end
       }
     )
     response_content.join
-  end
-
-  def model
-    MODEL
   end
 
   private

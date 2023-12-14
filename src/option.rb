@@ -17,5 +17,9 @@ class Option
       short '-q'
       long '--quick'
     end
+
+    option :model do
+      long "--model string"
+    end
   end
 end
