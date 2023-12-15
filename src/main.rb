@@ -71,6 +71,6 @@ class Main
     Prompt.prompt.say("\n")
     enc = Tiktoken.encoding_for_model(model)
     length = enc.encode(content).length
-    Prompt.prompt.ok("token length: #{length}", color: :black)
+    Prompt.prompt.ok("token length: #{length}", color: :cyan)
   end
 end
