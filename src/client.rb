@@ -17,10 +17,10 @@ class Client
     response_content = []
     @client.chat(
       parameters: {
-        model: MODEL,
-        messages: take_last(messages, MESSAGE_LENGTH),
-        temperature:,
-        stream: proc do |chunk, _bytesize| handle_stream!(response_content, chunk) end
+        model: MODEL, messages: take_last(messages, MESSAGE_LENGTH), temperature:,
+        stream: proc do |chunk, _bytesize|
+                  handle_stream!(response_content, chunk)
+                end
       }
     )
     response_content.join
