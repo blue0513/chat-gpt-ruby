@@ -7,7 +7,7 @@ class Prompt
     TTY::Prompt.new(
       interrupt: proc { |_|
         prompt.ok('Bye')
-        exit
+        raise Interrupt
       }
     )
   end
