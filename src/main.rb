@@ -32,10 +32,10 @@ class Main
     @messages.push({ role: 'user', content: user_input_result[:user_content] })
     response = client_request(client: @client, messages: @messages, temperature: @chat_config.temperature)
     @messages.push({ role: 'assistant', content: response })
-    Sound.play_sound
 
-    total_messages = @messages.map { |msg| msg[:content] }.join
-    print_token(model: client.model, content: total_messages)
+    print_token(model: @client.model, content: @messages.map { |msg| msg[:content] }.join)
+  rescue Interrupt => _e
+    interrupt(@messages)
   rescue StandardError => e
     catch_error(error: e, messages: @messages)
   end
@@ -57,8 +57,14 @@ class Main
     # Processed by Stream and output to stdout
     content = client.request(messages:, temperature:)
     Prompt.prompt.say("\n")
+    Sound.play_sound
 
     content
+  end
+
+  def interrupt(messages)
+    exit 0 unless messages.last[:role] == 'user' # while waiting for user input, interrupting will exit
+    Prompt.prompt.warn('interrupted')
   end
 
   def catch_error(error:, messages:)

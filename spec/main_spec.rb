@@ -6,14 +6,17 @@ RSpec.describe Main do
   let(:client_double) { instance_double(Client) }
   let(:client_response) { 'Hello world' }
   let(:chat_config_double) { instance_double(ChatConfig) }
+  let(:tiktoken_double) { instance_double(Tiktoken::Encoding) }
 
   before do
     allow(Client).to receive(:new).and_return(client_double)
-    allow(client_double).to receive(:request).and_return(client_response)
+    allow(client_double).to receive_messages(request: client_response, model: 'model')
 
     allow(ChatConfig).to receive(:new).and_return(chat_config_double)
     allow(chat_config_double).to receive_messages(model_profile: '', history_messages: [], temperature: 1.0,
                                                   configure!: nil)
+    allow(Tiktoken).to receive(:encoding_for_model).and_return(tiktoken_double)
+    allow(tiktoken_double).to receive(:encode).and_return('')
   end
 
   describe 'initialize' do
