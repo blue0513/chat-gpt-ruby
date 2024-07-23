@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class Client
-  MODEL = 'gpt-4o'
+  MODEL = ENV.fetch('OPENAI_MODEL', 'gpt-4o')
   MESSAGE_LENGTH = 20
 
   def initialize
