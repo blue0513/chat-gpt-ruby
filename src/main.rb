@@ -22,7 +22,7 @@ class Main
       *@chat_config.history_messages
     ]
 
-    show_config(config: @chat_config)
+    show(config: @chat_config, client: @client)
   end
 
   def chat!
@@ -41,6 +41,16 @@ class Main
   end
 
   private
+
+  def show(config:, client:)
+    show_client(client:)
+    show_config(config:)
+  end
+
+  def show_client(client:)
+    Prompt.prompt.ok('---- model is ----', color: :magenta)
+    Prompt.prompt.say(client.model)
+  end
 
   def show_config(config:)
     Prompt.prompt.ok('---- system message is ----', color: :magenta)
