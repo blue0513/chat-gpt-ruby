@@ -69,9 +69,9 @@ GEM
       faraday (>= 1)
       faraday-multipart (>= 1)
     ruby-progressbar (1.13.0)
-    tiktoken_ruby (0.0.9-arm64-darwin)
-    tiktoken_ruby (0.0.9-x86_64-darwin)
-    tiktoken_ruby (0.0.9-x86_64-linux)
+    tiktoken_ruby (0.0.11.1-arm64-darwin)
+    tiktoken_ruby (0.0.11.1-x86_64-darwin)
+    tiktoken_ruby (0.0.11.1-x86_64-linux)
     tty-color (0.6.0)
     tty-cursor (0.7.1)
     tty-option (0.3.0)
@@ -100,7 +100,7 @@ DEPENDENCIES
   rubocop
   rubocop-rspec (~> 3.5)
   ruby-openai
-  tiktoken_ruby (~> 0.0.9)
+  tiktoken_ruby (~> 0.0.11)
   tty-option
   tty-prompt
 
