@@ -34,6 +34,9 @@ GEM
     public_suffix (6.0.1)
     racc (1.8.1)
     rainbow (3.1.1)
+    rake-compiler-dock (1.9.1)
+    rb_sys (0.9.117)
+      rake-compiler-dock (= 1.9.1)
     regexp_parser (2.10.0)
     rspec (3.13.0)
       rspec-core (~> 3.13.0)
@@ -69,9 +72,8 @@ GEM
       faraday (>= 1)
       faraday-multipart (>= 1)
     ruby-progressbar (1.13.0)
-    tiktoken_ruby (0.0.9-arm64-darwin)
-    tiktoken_ruby (0.0.9-x86_64-darwin)
-    tiktoken_ruby (0.0.9-x86_64-linux)
+    tiktoken_ruby (0.0.12)
+      rb_sys (~> 0.9)
     tty-color (0.6.0)
     tty-cursor (0.7.1)
     tty-option (0.3.0)
@@ -100,7 +102,7 @@ DEPENDENCIES
   rubocop
   rubocop-rspec (~> 3.5)
   ruby-openai
-  tiktoken_ruby (~> 0.0.9)
+  tiktoken_ruby (~> 0.0.12)
   tty-option
   tty-prompt
 
